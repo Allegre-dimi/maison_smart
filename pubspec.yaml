@@ -1,0 +1,53 @@
+name: ndako
+description: "Une maison intelligente — backend Django"
+publish_to: 'none'
+
+version: 1.0.0+1
+
+environment:
+  sdk: ^3.8.1
+
+dependencies:
+  flutter:
+    sdk: flutter
+
+  cupertino_icons: ^1.0.8
+  google_fonts: ^6.2.1
+  font_awesome_flutter: ^10.8.0
+  image_picker: ^0.8.7+4
+  speech_to_text: ^7.0.0
+  flutter_tts: ^4.2.3
+  google_mlkit_language_id: ^0.10.0
+  flutter_dotenv: ^5.0.2
+  permission_handler: ^11.3.1
+  string_similarity: ^2.0.0
+  shared_preferences: ^2.3.0
+  dart_levenshtein: ^1.0.1
+
+  percent_indicator: ^4.2.2
+
+  share_plus: ^12.0.1
+
+  http: ^1.2.0
+
+  provider: ^6.0.5
+
+  intl: ^0.20.2
+  url_launcher: ^6.2.5
+
+  fl_chart: ^0.68.0
+
+  qr_flutter: ^4.0.0
+
+  web_socket_channel: ^3.0.0
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+
+  flutter_lints: ^5.0.0
+
+flutter:
+  uses-material-design: true
+  assets:
+     - images/
