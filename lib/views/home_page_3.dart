@@ -837,13 +837,22 @@ class _VoiceRecognitionDialogState extends State<VoiceRecognitionDialog>
       final String phrase = await _speechService.listen(
         localeId: localeId,
         maxListenDuration: const Duration(seconds: 8),
+        onPartial: (partial) {
+          if (!mounted) return;
+          setState(() {
+            _recognizedText =
+                partial.trim().isEmpty ? "🎤 Parlez maintenant..." : partial;
+          });
+        },
       );
 
+      if (!mounted) return;
       setState(() {
         _recognizedText = phrase.trim().isEmpty ? "" : phrase;
         _isListening = false;
       });
     } catch (e) {
+      if (!mounted) return;
       setState(() {
         _recognizedText = "Erreur reconnaissance : ${e.toString()}";
         _isListening = false;
@@ -915,11 +924,21 @@ class _VoiceRecognitionDialogState extends State<VoiceRecognitionDialog>
                     : _handleListen,
               ),
               TextButton(
-                onPressed: () {
+                onPressed: () async {
+                  // Si l'écoute est encore en cours, on la stoppe proprement
+                  // pour récupérer le texte reconnu jusqu'ici au lieu de
+                  // pop avec une chaîne vide.
+                  if (_isListening) {
+                    await _speech_service_stopSafe();
+                    if (!mounted) return;
+                    setState(() => _isListening = false);
+                  }
+                  final text = _recognizedText.trim();
+                  final isPlaceholder =
+                      text == "🎤 Parlez maintenant..." ||
+                          text.startsWith("Erreur reconnaissance");
                   Navigator.of(context).pop({
-                    'text': _recognizedText == "🎤 Parlez maintenant..."
-                        ? ""
-                        : _recognizedText,
+                    'text': isPlaceholder ? "" : text,
                     'language': _selectedLang,
                   });
                 },

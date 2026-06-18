@@ -6,6 +6,7 @@ class SpeechService {
   bool _isAvailable = false;
   bool _isListening = false;
   String _lastWords = '';
+  Completer<String>? _currentCompleter;
 
   /// Initialise le micro
   Future<void> init() async {
@@ -15,10 +16,14 @@ class SpeechService {
     );
   }
 
-  /// Écoute la voix et retourne le texte reconnu
+  /// Écoute la voix et retourne le texte reconnu.
+  /// [onPartial] est appelé à chaque mise à jour intermédiaire, ce qui
+  /// permet à l'UI d'afficher la transcription en direct et de récupérer
+  /// le texte courant si l'utilisateur valide avant la fin (bouton OK).
   Future<String> listen({
     required String localeId,
     Duration maxListenDuration = const Duration(seconds: 8),
+    void Function(String partial)? onPartial,
   }) async {
     await init();
     if (!_isAvailable) return "";
@@ -26,6 +31,7 @@ class SpeechService {
     _lastWords = '';
     _isListening = true;
     final completer = Completer<String>();
+    _currentCompleter = completer;
 
     _speech.listen(
       localeId: localeId,
@@ -33,6 +39,7 @@ class SpeechService {
       partialResults: true,
       onResult: (result) {
         _lastWords = result.recognizedWords;
+        if (onPartial != null) onPartial(_lastWords);
         if (result.finalResult) {
           _isListening = false;
           if (!completer.isCompleted) completer.complete(_lastWords);
@@ -54,13 +61,19 @@ class SpeechService {
     return completer.future;
   }
 
-  /// Arrête manuellement l’écoute
-  Future<void> stopListening() async {
+  /// Arrête manuellement l’écoute et débloque [listen] avec le texte
+  /// reconnu jusqu’ici (utile quand l’utilisateur valide via "OK").
+  Future<String> stopListening() async {
     if (_speech.isListening) {
       await _speech.stop();
-      _isListening = false;
-      print("Écoute stoppée manuellement");
     }
+    _isListening = false;
+    final completer = _currentCompleter;
+    if (completer != null && !completer.isCompleted) {
+      completer.complete(_lastWords);
+    }
+    _currentCompleter = null;
+    return _lastWords;
   }
 
   bool get isAvailable => _isAvailable;
