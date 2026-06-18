@@ -85,6 +85,8 @@ class _InscriptionPageState extends State<InscriptionPage> {
       child: TextFormField(
         obscureText: obscure,
         onChanged: onChanged,
+        style: const TextStyle(color: Colors.black),
+        cursorColor: Colors.deepPurple,
         validator: (val) {
           if (val == null || val.trim().isEmpty) {
             return 'Ce champ est requis';

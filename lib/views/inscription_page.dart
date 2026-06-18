@@ -98,6 +98,8 @@ class _InscriptionPageState extends State<InscriptionPage> {
                     DelayedAnimations(
                       delay: 1000,
                       child: TextFormField(
+                        style: const TextStyle(color: Colors.black),
+                        cursorColor: Colors.deepPurple,
                         decoration: const InputDecoration(
                           labelText: 'Nom complet',
                           border: OutlineInputBorder(),
@@ -115,6 +117,8 @@ class _InscriptionPageState extends State<InscriptionPage> {
                     DelayedAnimations(
                       delay: 1200,
                       child: TextFormField(
+                        style: const TextStyle(color: Colors.black),
+                        cursorColor: Colors.deepPurple,
                         decoration: const InputDecoration(
                           labelText: 'Nom d’utilisateur',
                           border: OutlineInputBorder(),
@@ -132,6 +136,8 @@ class _InscriptionPageState extends State<InscriptionPage> {
                     DelayedAnimations(
                       delay: 1400,
                       child: TextFormField(
+                        style: const TextStyle(color: Colors.black),
+                        cursorColor: Colors.deepPurple,
                         decoration: const InputDecoration(
                           labelText: 'Adresse email',
                           border: OutlineInputBorder(),
@@ -152,6 +158,8 @@ class _InscriptionPageState extends State<InscriptionPage> {
                     DelayedAnimations(
                       delay: 1600,
                       child: TextFormField(
+                        style: const TextStyle(color: Colors.black),
+                        cursorColor: Colors.deepPurple,
                         decoration: InputDecoration(
                           labelText: 'Mot de passe',
                           border: const OutlineInputBorder(),
@@ -180,6 +188,8 @@ class _InscriptionPageState extends State<InscriptionPage> {
                     DelayedAnimations(
                       delay: 1800,
                       child: TextFormField(
+                        style: const TextStyle(color: Colors.black),
+                        cursorColor: Colors.deepPurple,
                         decoration: InputDecoration(
                           labelText: 'Confirmer le mot de passe',
                           border: const OutlineInputBorder(),
