@@ -24,9 +24,16 @@ class _JoinHousePageState extends State<JoinHousePage> {
     if (!_formKey.currentState!.validate()) return;
     setState(() => _isLoading = true);
 
+    // Normalise le code côté client (le backend le fait aussi mais ça évite
+    // un aller-retour si l'utilisateur a collé un code avec espace ou en
+    // minuscules — l'alphabet serveur est strictement A-Z + 2-9).
+    final code = _houseCodeController.text
+        .trim()
+        .replaceAll(RegExp(r'\s+'), '')
+        .toUpperCase();
+
     try {
-      final Maison maison = await MaisonService()
-          .acceptInvitation(_houseCodeController.text.trim());
+      final Maison maison = await MaisonService().acceptInvitation(code);
 
       widget.utilisateur.houseIds.add(maison.houseId);
       widget.utilisateur.activeHouseId = maison.houseId;
@@ -35,16 +42,26 @@ class _JoinHousePageState extends State<JoinHousePage> {
       if (!mounted) return;
       Navigator.pop(context, maison.houseId);
     } on ApiException catch (e) {
-      _showMessage(
-        e.statusCode == 404
-            ? "Code d'invitation introuvable ou expiré."
-            : "Erreur : ${e.message}",
-        isError: true,
-      );
+      _showMessage(_messagePourErreur(e), isError: true);
     } catch (e) {
       _showMessage("Erreur : $e", isError: true);
     } finally {
       if (mounted) setState(() => _isLoading = false);
+    }
+  }
+
+  /// Mappe le status code backend sur un message lisible.
+  /// 404 = code inexistant ; 410 = expiré ou déjà utilisé ;
+  /// 400 = déjà propriétaire ; reste = on relaie le message serveur.
+  String _messagePourErreur(ApiException e) {
+    switch (e.statusCode) {
+      case 404:
+        return "Code d'invitation introuvable.";
+      case 410:
+      case 400:
+        return e.message.isNotEmpty ? e.message : "Invitation non valide.";
+      default:
+        return "Erreur : ${e.message}";
     }
   }
 
